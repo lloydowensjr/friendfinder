@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>BHM FriendFinder</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+	  crossorigin="anonymous">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="jumbotron text-center">
+			<h1 class="display-3">BHM FriendFinder</h1>
+			<p class="lead">A History Lesson in Friendship</p>
+			<hr class="my-4">
+			<br>
+
+			<div class="form-group row">
+				<label for="friendName" class="col-sm-2 col-form-label">NAME</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control valid" id="friendName" placeholder="Name (Required)" required="">
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="friendPhoto" class="col-sm-2 col-form-label">PHOTO</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control valid" id="friendPhoto" placeholder="Link to image (Required)" required="">
+				</div>
+			</div>
+			<hr class="my-4">
+
+			<div id="questionBank"></div>
+
+			<hr class="my-4">
+			<button type="submit" class="btn btn-primary submit">Submit</button>
+
+
+
+
+		</div>
+	</div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+	
+	var questionArray = [{
+        "question": "You believe in equality at any cost",
+        "id": "question1"
+      },
+      {
+        "question": "You are from Wakanda and are the king",
+        "id": "question2"
+      },
+      {
+        "question": "You have a relationship with words like no one else",
+        "id": "question3"
+      },
+      {
+        "question": "You have been to Mecca and it changed your mission in life",
+        "id": "question4"
+      },
+      {
+        "question": "You spent time in jail for simply being black",
+        "id": "question5"
+      },
+      {
+        "question": "You travelled around the world sharing your work",
+        "id": "question6"
+      },
+      {
+        "question": "You were the face of an infamous organization at one point in your life",
+        "id": "question7"
+      },
+      {
+        "question": "You had a dream that one day equality in every area of life would exist",
+        "id": "question8"
+      },
+      {
+        "question": "You marched and preached and marched some more",
+        "id": "question9"
+      },
+      {
+        "question": "You once wrote about a dream deferred",
+        "id": "question10"
+      }
+	];
+	
+	var html = '';
+	$.each(questionArray, function (key, value) {
+		html += `<div class="col-auto text-left form-group">`;
+		html +=
+			`<label class="mr-sm-2" for="friendSurveyQ${key+1}">[QUESTION ${key+1}] ${questionArray[key].question}</label><br>`;
+		html += `<select class="valid form-control custom-select mb-2 mr-sm-2 mb-sm-0" id="friendQuestion${key+1}">`;
+		html += `<option value="" selected disabled>Choose...</option>`;
+		html += `<option value="1">1 (strongly disagree)</option>`;
+		html += `<option value="2">2</option>`;
+		html += `<option value="3">3 (neutral)</option>`;
+		html += `<option value="4">4</option>`;
+		html += `<option value="5">5 (strongly agree)</option>`;
+		html += `</select>`;
+		html += `</div>`;
+	});
+	$('#questionBank').append(html);
+	
+	$('.submit').on('click', function (event) {
+		event.preventDefault();
+		function validForm() {
+			var formFill = true;
+			$('.valid').each(function () {
+				if ($(this).val() === "") {
+					formFill = false;
+				}
+			});
+			return formFill;
+		}
+		if (validForm()) {
+			var newFriend = {
+				name: $('#friendName').val().trim(),
+				photo: $('#friendPhoto').val().trim(),
+				scores: [
+					$("#friendQuestion1").val(),
+					$("#friendQuestion2").val(),
+					$("#friendQuestion3").val(),
+					$("#friendQuestion4").val(),
+					$("#friendQuestion5").val(),
+					$("#friendQuestion6").val(),
+					$("#friendQuestion7").val(),
+					$("#friendQuestion8").val(),
+					$("#friendQuestion9").val(),
+					$("#friendQuestion10").val()
+				]
+			};
+			var currentURL = window.location.origin;
+			$.post(currentURL + '/api/friends', newFriend, function (data) {
+				console.log(data.photo)
+				$("#friendName").text(data.name);
+				$("#friendPic").attr("src", data.photo)
+				console.log($("#friendPic").attr("src", data.photo))
+			});
+			
+			$('#friendName').val('');
+			$('#friendPhoto').val('');
+			$('#friendQuestion1').val(''),
+				$('#friendQuestion2').val(''),
+				$('#friendQuestion3').val(''),
+				$('#friendQuestion4').val(''),
+				$('#friendQuestion5').val(''),
+				$('#friendQuestion6').val(''),
+				$('#friendQuestion7').val(''),
+				$('#friendQuestion8').val(''),
+				$('#friendQuestion9').val(''),
+				$('#friendQuestion10').val('')
+		} else {
+			alert('Please complete the survey by filling in all blanks');
+		};
+	});
+</script>
